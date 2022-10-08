@@ -37,6 +37,7 @@ urlpatterns = [
     ),
     path("accounts/", include("django_registration.backends.activation.urls")),
     path("accounts/", include("allauth.urls")), # using allauth library
+    path("api/v1/", include("blog.api_urls")), # include api_urls.py in same folder
 ]
 
 if settings.DEBUG:
