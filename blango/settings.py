@@ -42,20 +42,35 @@ class Dev(Configuration):
 
 
     # Application definition
-
     INSTALLED_APPS = [
         'django.contrib.admin',
         'django.contrib.auth',
         'django.contrib.contenttypes',
         'django.contrib.sessions',
         'django.contrib.messages',
+        "django.contrib.sites", # for alluth
         'django.contrib.staticfiles',
         "crispy_forms",
         "crispy_bootstrap5",
         "debug_toolbar",
         "blog",
         "blango_auth",
+        "allauth", 
+        "allauth.account", 
+        "allauth.socialaccount", 
+        "allauth.socialaccount.providers.google",
     ]
+
+    SITE_ID = 1
+    
+    # Normally when Django Allauth creates a User object from a social account login, 
+    # it will generate it a username based on the user ID at the third party. 
+    # Since our custom User model doesn’t have a username field, 
+    # Django Allauth will fail, unless we make some settings changes.
+    ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+    ACCOUNT_EMAIL_REQUIRED = True
+    ACCOUNT_USERNAME_REQUIRED = False
+    ACCOUNT_AUTHENTICATION_METHOD = "email"
 
     CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
     CRISPY_TEMPLATE_PACK = "bootstrap5"
