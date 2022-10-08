@@ -1,8 +1,25 @@
-
 from rest_framework import serializers
-from blog.models import Post
+from blog.models import Post, Tag
+from blango_auth.models import User
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "email"]
 
 class PostSerializer(serializers.ModelSerializer):
+
+    # return tags as list of strings (since it is to many field) instead of list of primary keys, can be updated
+    tags = serializers.SlugRelatedField(
+        slug_field="value", many=True, queryset=Tag.objects.all()
+    )
+
+    # returns author as link to another API call which is updated in urls.py
+    # view name is given under urls.py
+    author = serializers.HyperlinkedRelatedField(
+        queryset=User.objects.all(), view_name="api_user_detail", lookup_field="email"
+    )
+
     class Meta:
         model = Post
         fields = "__all__"
