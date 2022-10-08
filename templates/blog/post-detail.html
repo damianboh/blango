@@ -13,13 +13,24 @@
             {{ post.content|safe }}
         </div>
     </div>
+
+    {% if post.author.profile %}
+    {% row %}
+        {% col %}
+            <h4>About the author</h4>
+            <p>{{ post.author.profile.bio }}</p>
+        {% endcol %}
+    {% endrow %}
+    {% endif %}
     
     {% include "blog/post-comments.html" %}
+    
     {% row %}
         {% col %}
             {% recent_posts post %}
         {% endcol %}
     {% endrow %}
+
 
 
 {% endblock %}
