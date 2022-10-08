@@ -1,3 +1,4 @@
+from blog.api.serializers import PostSerializer
 import json
 from http import HTTPStatus
 
@@ -27,31 +28,39 @@ def post_to_dict(post):
 def post_list(request):
     if request.method == "GET":
         posts = Post.objects.all()
-        posts_as_dict = [post_to_dict(p) for p in posts]
-        return JsonResponse({"data": posts_as_dict})
+        # posts_as_dict = [post_to_dict(p) for p in posts]
+        # return JsonResponse({"data": posts_as_dict})
+        return JsonResponse({"data": PostSerializer(posts, many=True).data})
     elif request.method == "POST":
-        post_data = json.loads(request.body)
-        post = Post.objects.create(**post_data)
-        return HttpResponse(
-            status=HTTPStatus.CREATED,
-            headers={"Location": reverse("api_post_detail", args=(post.pk,))},
-        )
+        # post_data = json.loads(request.body)
+        # post = Post.objects.create(**post_data)
+        # return HttpResponse(
+        #     status=HTTPStatus.CREATED,
+        #     headers={"Location": reverse("api_post_detail", args=(post.pk,))},
+        # )
+        serializer = PostSerializer(data=post_data)
+        serializer.is_valid(raise_exception=True)
+        post = serializer.save()
 
     return HttpResponseNotAllowed(["GET", "POST"])
 
 
 @csrf_exempt
-def post_detail(request, pk):
+def post_detail(request, pk): # pk gpt from URL
     post = get_object_or_404(Post, pk=pk)
 
     if request.method == "GET":
-        return JsonResponse(post_to_dict(post))
+        # return JsonResponse(post_to_dict(post))
+        return JsonResponse(PostSerializer(post).data)
     elif request.method == "PUT":
-        post_data = json.loads(request.body)
-        for field, value in post_data.items():
-            setattr(post, field, value)
-        post.save()
-        return HttpResponse(status=HTTPStatus.NO_CONTENT)
+        # post_data = json.loads(request.body)
+        # for field, value in post_data.items():
+        #     setattr(post, field, value)
+        # post.save()
+        # return HttpResponse(status=HTTPStatus.NO_CONTENT)
+        serializer = PostSerializer(post, data=post_data) # for update, need to start with instance post in first argument
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
     elif request.method == "DELETE":
         post.delete()
         return HttpResponse(status=HTTPStatus.NO_CONTENT)
