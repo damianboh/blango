@@ -193,7 +193,7 @@ class Dev(Configuration):
         "DEFAULT_AUTHENTICATION_CLASSES": [
             "rest_framework.authentication.BasicAuthentication",
             "rest_framework.authentication.SessionAuthentication",
-            "rest_framework.authentication.TokenAuthentication",
+            "rest_framework.authentication.TokenAuthentication", # no token by default
         ],
         "DEFAULT_PERMISSION_CLASSES": [
             "rest_framework.permissions.IsAuthenticatedOrReadOnly"
@@ -204,12 +204,21 @@ class Dev(Configuration):
             "blog.api.throttling.UserSustainedThrottle",
             "blog.api.throttling.UserBurstThrottle",
         ],
+        # defined in throttling.py
         "DEFAULT_THROTTLE_RATES": {
             "anon_sustained": "500/day",
             "anon_burst": "10/minute",
             "user_sustained": "5000/day",
             "user_burst": "100/minute",
         },
+        "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+        "PAGE_SIZE": 100,
+        "DEFAULT_FILTER_BACKENDS": [
+            # for filtering by author, tags etc. in url parameters
+            "django_filters.rest_framework.DjangoFilterBackend",
+            # for order filter
+            "rest_framework.filters.OrderingFilter"
+        ],
     }
 
     SWAGGER_SETTINGS = {

@@ -8,6 +8,8 @@ from django.views.decorators.vary import vary_on_headers, vary_on_cookie
 
 from rest_framework.exceptions import PermissionDenied
 
+from blog.api.filters import PostFilterSet
+
 from django.db.models import Q
 from django.utils import timezone
 
@@ -33,12 +35,21 @@ class TagViewSet(viewsets.ModelViewSet):
     # own custom action to get posts with tags
     @action(methods=["get"], detail=True, name="Posts with the Tag")
     def posts(self, request, pk=None):
-        tag = self.get_object()
+
+        # for pagination
+        page = self.paginate_queryset(tag.posts)
+        if page is not None:
+            post_serializer = PostSerializer(
+                page, many=True, context={"request": request}
+            )
+            return self.get_paginated_response(post_serializer.data)
+
         post_serializer = PostSerializer(
             tag.posts, many=True, context={"request": request}
         )
         return Response(post_serializer.data)
 
+    # allow caching for only list and retrieve, not needed if no caching
     @method_decorator(cache_page(300))
     def list(self, *args, **kwargs):
         return super(TagViewSet, self).list(*args, **kwargs)
@@ -74,10 +85,14 @@ class UserDetail(generics.RetrieveAPIView):
 
 # using viewsets
 class PostViewSet(viewsets.ModelViewSet):
+    filterset_class = PostFilterSet # for more customization using fliter set (published date and email contains)
+    # filterset_fields = ["author", "tags"] # less customization but just need django-filter library
     permission_classes = [AuthorModifyOrReadOnly | IsAdminUserForObject]
     queryset = Post.objects.all()
 
+    # overriding method
     # user based filtering
+    # by default get_queryset returns everything in queryset
     def get_queryset(self):
         if self.request.user.is_anonymous:
             # published only
@@ -113,7 +128,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 f"'new', 'today' or 'week'"
             )
 
-
+    # overriding method
     def get_serializer_class(self):
         # need this for different returns for GET and POST (list and create)
         if self.action in ("list", "create"): 
@@ -129,6 +144,13 @@ class PostViewSet(viewsets.ModelViewSet):
         if request.user.is_anonymous:
             raise PermissionDenied("You must be logged in to see which Posts are yours")
         posts = self.get_queryset().filter(author=request.user)
+
+        # for pagination, have to do this as this is not generic view, this is manual action method
+        page = self.paginate_queryset(posts)
+        if page is not None:
+            serializer = PostSerializer(page, many=True, context={"request": request})
+            return self.get_paginated_response(serializer.data)
+
         serializer = PostSerializer(posts, many=True, context={"request": request})
         return Response(serializer.data)
 

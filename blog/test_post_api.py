@@ -53,7 +53,8 @@ class PostApiTestCase(TestCase):
 
     def test_post_list(self):
         resp = self.client.get("/api/v1/posts/")
-        data = resp.json()
+        # data = resp.json()
+        data = resp.json()["results"] # for pagination
         self.assertEqual(len(data), 2)
 
         # see if posts list written by API is same as post objects created earlier
