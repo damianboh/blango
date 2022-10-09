@@ -8,6 +8,8 @@ from rest_framework.routers import DefaultRouter
 #from blog.api.views import PostList, PostDetail, UserDetail, TagViewSet
 from blog.api.views import PostViewSet, UserDetail, TagViewSet
 
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 router = DefaultRouter()
 router.register("tags", TagViewSet)
 router.register("posts", PostViewSet)
@@ -35,9 +37,20 @@ urlpatterns = format_suffix_patterns(urlpatterns)
 
 urlpatterns += [
     path("auth/", include("rest_framework.urls")),
-    # lists all request urls when ended with .json or .yaml
+    
+    # for basic token authentication
     path("token-auth/", views.obtain_auth_token),
-     re_path(
+
+    # for simple jwt authentication with djangorestframework-simplejwt library
+    # get refresh and temp access token
+    path("jwt/", TokenObtainPairView.as_view(), name="jwt_obtain_pair"),
+    # generate access token again using refresh token
+    # can be decoded at jwt.io, but need a secret to verify signature
+    # can decode contents but can't change them without secret
+    path("jwt/refresh/", TokenRefreshView.as_view(), name="jwt_refresh"),
+    
+    # lists all request urls when ended with .json or .yaml
+    re_path(
         r"^swagger(?P<format>\.json|\.yaml)$",
         schema_view.without_ui(cache_timeout=0),
         name="schema-json",
