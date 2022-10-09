@@ -12,6 +12,7 @@ router = DefaultRouter()
 router.register("tags", TagViewSet)
 router.register("posts", PostViewSet)
 
+# for yasg library swagger test
 schema_view = get_schema_view(
     openapi.Info(
         title="Blango API",
@@ -23,7 +24,6 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-
     # below not needed when using PostViewSet, register as router above instead
     # path("posts/", PostList.as_view(), name="api_post_list"),
     # path("posts/<int:pk>", PostDetail.as_view(), name="api_post_detail"),
@@ -35,16 +35,25 @@ urlpatterns = format_suffix_patterns(urlpatterns)
 
 urlpatterns += [
     path("auth/", include("rest_framework.urls")),
+    # lists all request urls when ended with .json or .yaml
     path("token-auth/", views.obtain_auth_token),
      re_path(
         r"^swagger(?P<format>\.json|\.yaml)$",
         schema_view.without_ui(cache_timeout=0),
         name="schema-json",
     ),
+    # api/v1/swagger/ gives UI to test APIs
     path(
         "swagger/",
         schema_view.with_ui("swagger", cache_timeout=0),
         name="schema-swagger-ui",
     ),
-    path("", include(router.urls)),
+    path("", include(router.urls)), # for PostViewSet and TagViewSet
+
+    # customize PostViewSet by time
+    path(
+        "posts/by-time/<str:period_name>/",
+        PostViewSet.as_view({"get": "list"}),
+        name="posts-by-time",
+    ),
 ]
