@@ -1,84 +1,38 @@
-console.time('myTimer')
-console.count('counter1')
-console.log('A normal log message')
-console.warn('Warning: something bad might happen')
-console.error('Error: Something bad did happen!')
-console.count('counter1')
-console.log('All the things above took this long to happen:')
-console.timeEnd('myTimer')
-
-class Greeter {
-  constructor (name) {
-    this.name = name
+class ClickButton extends React.Component {
+  state = {
+    wasClicked: false
   }
 
-  getGreeting () {
-    if (this.name === undefined) {
-      return 'Hello, no name'
-    }
-
-    return 'Hello, ' + this.name
+  handleClick () {
+    this.setState(
+      {wasClicked: true}
+    )
   }
 
-  showGreeting (greetingMessage) {
-    console.log(greetingMessage)
-  }
+  render () {
+    let buttonText
 
-  greet () {
-    this.showGreeting(this.getGreeting())
-  }
-}
+    if (this.state.wasClicked)
+      buttonText = 'Clicked!'
+    else
+      buttonText = 'Click Me'
 
-const g = new Greeter('Patchy')  // Put your name here if you like
-g.greet()
-
-class DelayedGreeter extends Greeter {
-  delay = 2000
-
-  constructor (name, delay) {
-    super(name)
-    if (delay !== undefined) {
-      this.delay = delay
-    }
-  }
-
-  greet () {
-    setTimeout(
-      () => {
-        this.showGreeting(this.getGreeting())
-      }, this.delay
+    return React.createElement(
+      'button',
+      {
+        className: 'btn btn-primary mt-2',
+        onClick: () => {
+          this.handleClick()
+        }
+      },
+      buttonText
     )
   }
 }
 
-const dg2 = new DelayedGreeter('Patchy 2 Seconds')
-dg2.greet()
+const domContainer = document.getElementById('react_root')
 
-const dg1 = new DelayedGreeter('Patchy 1 Second', 1000)
-dg1.greet()
-
-function resolvedCallback(data) {
-  console.log('Resolved with data ' +  data)
-}
-
-function rejectedCallback(message) {
-  console.log('Rejected with message ' + message)
-}
-
-const lazyAdd = function (a, b) {
-  const doAdd = (resolve, reject) => {
-    if (typeof a !== "number" || typeof b !== "number") {
-      reject("a and b must both be numbers")
-    } else {
-      const sum = a + b
-      resolve(sum)
-    }
-  }
-
-  return new Promise(doAdd)
-}
-
-const p = lazyAdd(3, 4)
-p.then(resolvedCallback, rejectedCallback)
-
-lazyAdd("nan", "alsonan").then(resolvedCallback, rejectedCallback)
+ReactDOM.render(
+  React.createElement(ClickButton),
+  domContainer
+)
