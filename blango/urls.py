@@ -27,6 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # other patterns
     path("", blog.views.index),
+    path("post-table/", blog.views.post_table, name="blog-post-table"),
     path("post/<slug>/", blog.views.post_detail, name="blog-post-detail"),
     path("ip/", blog.views.get_ip),
     path("accounts/", include("django.contrib.auth.urls")),
@@ -40,6 +41,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")), # using allauth library
     #path("api/v1/", include("blog.api_urls")), # include api_urls.py in same folder, old files before using generic views
     path("api/v1/", include("blog.api.urls")),
+    
 ]
 
 if settings.DEBUG:
