@@ -5,6 +5,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 
+from versatileimagefield.fields import VersatileImageField, PPOIField
 # Create your models here.
 
 class AuthorProfile(models.Model):
@@ -48,6 +49,10 @@ class Post(models.Model):
     content = models.TextField()
     tags = models.ManyToManyField(Tag, related_name="posts")
     comments = GenericRelation(Comment)
+    hero_image = VersatileImageField(
+        upload_to="hero_images", ppoi_field="ppoi", null=True, blank=True
+    )
+    ppoi = PPOIField(null=True, blank=True)
 
     def __str__(self):
         return self.title

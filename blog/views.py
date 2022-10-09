@@ -22,7 +22,7 @@ def index(request):
     posts = (
         Post.objects.filter(published_at__lte=timezone.now())
         .select_related("author")
-        .only("title", "summary", "content", "author", "published_at", "slug")
+        .only("title", "hero_image", "ppoi", "summary", "content", "author", "published_at", "slug")
     )
     logger.debug("Got %d posts", len(posts))
     return render(request, "blog/index.html", {"posts": posts})
