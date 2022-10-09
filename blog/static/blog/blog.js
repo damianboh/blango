@@ -1,3 +1,8 @@
-const framework = 'Django'
-const language = 'Python'
-alert(framework + ' is written in ' + language)
+console.time('myTimer')
+console.count('counter1')
+console.log('A normal log message')
+console.warn('Warning: something bad might happen')
+console.error('Error: Something bad did happen!')
+console.count('counter1')
+console.log('All the things above took this long to happen:')
+console.timeEnd('myTimer')
