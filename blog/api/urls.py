@@ -12,7 +12,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = DefaultRouter()
 router.register("tags", TagViewSet)
-router.register("posts", PostViewSet)
+# router.register("posts", PostViewSet, basename="post") 
+# name of url will be "post-list" for GET list API
+# above and below are equivalent, if basename changed, then name will be basename-list for GET
+router.register("posts", PostViewSet) 
 
 # for yasg library swagger test
 schema_view = get_schema_view(

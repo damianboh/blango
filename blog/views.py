@@ -11,6 +11,8 @@ import logging
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
 
+from django.urls import reverse # reverse post list url to pass into post_table
+
 logger = logging.getLogger(__name__)
 
 @cache_page(300)
@@ -56,5 +58,11 @@ def get_ip(request):
   from django.http import HttpResponse
   return HttpResponse(request.META['REMOTE_ADDR'])
 
+# def post_table(request):
+#     return render(request, "blog/post-table.html")
+
 def post_table(request):
-    return render(request, "blog/post-table.html")
+    return render(
+        request, "blog/post-table.html", {"post_list_url": reverse("post-list")}
+        # post-list is from urls.py under router.register PostViewSet, equivalent to path() with name = "post-list"
+    )
